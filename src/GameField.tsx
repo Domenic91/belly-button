@@ -2,6 +2,7 @@ import * as React from 'react';
 import styled from 'styled-components';
 import { GameCell } from './GameCell';
 import { IGameCell } from './types';
+import { gameWon } from './win';
 
 const log = () => {
   // tslint:disable-next-line:no-console
@@ -34,7 +35,6 @@ export const GameField = ({
   const calcWidth = () => {
     return 100 / Math.sqrt(items.length);
   };
-
   return (
     <GameFieldStyle>
       {items.map((c: IGameCell) => (
