@@ -1,7 +1,7 @@
 import * as React from 'react';
 import styled from "styled-components";
 import {GameCell} from "./GameCell";
-import {IGameCell} from "./types";
+import {GameCellInterface} from "./types";
 
 const log = () => {
     // tslint:disable-next-line:no-console
@@ -24,7 +24,7 @@ const CellStyle = styled.div`
   box-sizing: border-box
 `;
 
-export const GameField = ({items}: {items: IGameCell[]}) => {
+export const GameField = ({items}: {items: GameCellInterface[]}) => {
 
     const calcWidth = () => {
         return 100 / Math.sqrt(items.length)
@@ -32,7 +32,7 @@ export const GameField = ({items}: {items: IGameCell[]}) => {
 
     return(
         <GameFieldStyle>
-            {items.map((c:any) =>
+            {items.map((c:GameCellInterface) =>
                 (
                     <CellStyle
                         key={c.id}

@@ -1,5 +1,6 @@
 import * as React from 'react';
 import styled from 'styled-components';
+import {GameCellInterface} from "./types";
 
 
 const CellStyle = styled.div`
@@ -17,7 +18,7 @@ const CellStyle = styled.div`
   }
 `;
 
-export function GameCell({props, fn}:{props:any, fn:any}) {
+export function GameCell({props, fn}:{props:GameCellInterface, fn: ()=>void}) {
     return(
         <CellStyle onClick={fn}>
             {props.value}
