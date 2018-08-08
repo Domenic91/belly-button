@@ -20,7 +20,7 @@ const CellStyle = styled.div`
   height: ${(props: {width: number}) => props.width}%; 
   display: inline-block;
   cursor: pointer;
-  padding: 2px
+  padding: 4px
   box-sizing: border-box
 `;
 
