@@ -14,7 +14,7 @@ class App extends React.Component {
       
         </header>
         
-        <div> <h1>HTML4LIFE </h1></div>
+       <h1>HTML4LIFE </h1>
         <p className="App-intro">
           To get started, edit <code>src/App.tsx</code> and save to reload.
         </p>
