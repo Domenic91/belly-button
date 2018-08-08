@@ -11,13 +11,17 @@ const log = () => {
 const GameFieldStyle = styled.div`
   width: 100%;
   height: 100%;
+  border: 0px solid red
+  border-radius: 4px
 `;
 
 const CellStyle = styled.div`
-  background-color: red;
   width: ${(props: {width: number}) => props.width}%; 
   height: ${(props: {width: number}) => props.width}%; 
   display: inline-block;
+  cursor: pointer;
+  padding: 2px
+  box-sizing: border-box
 `;
 
 export const GameField = ({items}: {items: IGameCell[]}) => {
