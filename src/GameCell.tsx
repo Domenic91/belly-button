@@ -23,6 +23,6 @@ const colorScaled = (value: number) => {
     const hue = ((1 - (value / 8)) * 120).toString(10);
     return ["hsl(", hue, ",96%,69%)"].join("");
 };
-export function GameCell({ props, fn }: { props: any; fn: any }) {
-    return <CellStyle onClick={() => fn(props.id)} bgColor={colorScaled(props.value)}>{props.value} </CellStyle>;
+export function GameCell({ props, fn, isBlue }: { props: any; fn: any, isBlue: boolean }) {
+    return <CellStyle onClick={() => fn(props.id)} bgColor={isBlue ? "blue" : colorScaled(props.value)}>{props.value} </CellStyle>;
 }

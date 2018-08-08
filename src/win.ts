@@ -1,9 +1,9 @@
 import { IGameField } from '././types';
 
-export const gameWon = (gameField: IGameField): {} => {
+export const gameWon = (gameField: IGameField): { path: Set<number>, won: boolean } => {
   const startId = gameField.cells.findIndex(cell => cell.value === 'start');
   const endId = gameField.cells.findIndex(cell => cell.value === 'end');
-  const resultSet = recBlue(startId, gameField, new Set<number>());
+  const resultSet = recBlue(startId, gameField, new Set<number>([startId]));
   return {
     path: resultSet,
     won: resultSet.has(endId),

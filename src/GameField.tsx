@@ -5,8 +5,8 @@ import { IGameCell } from './types';
 import { gameWon } from './win';
 
 const log = () => {
-  // tslint:disable-next-line:no-console
-  console.log('test');
+    // tslint:disable-next-line:no-console
+    console.log('test');
 };
 
 const GameFieldStyle = styled.div`
@@ -26,8 +26,8 @@ const GameFieldStyle = styled.div`
 `;
 
 const CellStyle = styled.div`
-  width: ${(props: {width: number}) => props.width}%; 
-  height: ${(props: {width: number}) => props.width}%; 
+  width: ${(props: { width: number }) => props.width}%; 
+  height: ${(props: { width: number }) => props.width}%; 
   display: inline-block;
   cursor: pointer;
   padding: 4px
@@ -35,22 +35,25 @@ const CellStyle = styled.div`
 `;
 
 export const GameField = ({
-  items,
-  onCellPressed,
+    items,
+    onCellPressed,
+    path
 }: {
-  items: IGameCell[];
-  onCellPressed: (id: number | string) => any;
-}) => {
-  const calcWidth = () => {
-    return 100 / Math.sqrt(items.length);
-  };
-  return (
-    <GameFieldStyle>
-      {items.map((c: IGameCell) => (
-        <CellStyle key={c.id} width={calcWidth()}>
-          <GameCell fn={onCellPressed} props={c} />
-        </CellStyle>
-      ))}
-    </GameFieldStyle>
-  );
+        items: IGameCell[];
+        onCellPressed: (id: number | string) => any;
+        path: Set<number>
+    }) => {
+    const calcWidth = () => {
+        return 100 / Math.sqrt(items.length);
+    };
+    return (
+        <GameFieldStyle>
+            {items.map((c: IGameCell) => (
+                <CellStyle key={c.id} width={calcWidth()}>
+                    <GameCell fn={onCellPressed} props={c}
+                        isBlue={path.has(c.id)} />
+                </CellStyle>
+            ))}
+        </GameFieldStyle>
+    );
 };

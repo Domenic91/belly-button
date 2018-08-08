@@ -31,7 +31,7 @@ interface IGameFieldQuery {
   gameField: IGameField;
 }
 
-class GameFieldQuery2 extends Query<IGameFieldQuery> {}
+class GameFieldQuery2 extends Query<IGameFieldQuery> { }
 
 ReactDOM.render(
   <ApolloProvider client={client}>
@@ -42,11 +42,12 @@ ReactDOM.render(
             <Mutation mutation={callCellMutation}>
               {mutation => {
                 const path = gameWon(data.gameField);
-                console.log(path);
+                if (path.won) { alert("Schwanznutte!") }
                 return (
                   <AppStyle>
                     <GameFieldWrapStyle>
                       <GameField
+                        path={path.path}
                         items={data.gameField.cells}
                         onCellPressed={id => {
                           mutation({ variables: { id } });
