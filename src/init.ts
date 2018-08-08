@@ -1,13 +1,9 @@
-export interface IGameCell {
-    id: number,
-    value: string | number,
-} 
+import {GameField, GameCell} from './types'
 
-export const createGameField = (n: number): IGameCell[] =>{
-    const startID = (Math.random() * n) + 1;
-    const endID = (Math.random() * n * n) + (n * (n - 1));
-
-    return Array.from({ length: n*n }, (_, idx) => {
+const initialize = (width : number, height : number): GameField => {
+    const startID : number = Math.floor((Math.random() * width));
+    const endID : number = Math.floor((Math.random() * width * height) + (((height - 1) * width) + 1));
+    const cells : GameCell[] = Array.from({ length: width * height }, (_, idx) => {
         if (idx === startID){
             return { 
                 id: idx,
@@ -19,9 +15,16 @@ export const createGameField = (n: number): IGameCell[] =>{
                 value: "end",
             }; 
         }
-       return { 
+        return { 
             id: idx,
-            value: (Math.random() * 9) + 1,
+            value: Math.floor((Math.random() * 9) + 1),
         };
     });
-};
+
+   return {
+       cells,
+       width,
+       height,
+    }
+}
+

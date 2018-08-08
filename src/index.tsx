@@ -4,6 +4,7 @@ import {GameField} from "./GameField";
 import './index.css';
 import {createGameField} from "./init";
 import registerServiceWorker from './registerServiceWorker';
+import { inherits } from 'util';
 
 
 ReactDOM.render(
