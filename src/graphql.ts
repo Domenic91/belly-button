@@ -2,7 +2,7 @@ import gql from 'graphql-tag'
 
 export const gameFieldQuery = gql`
     query GameFieldQuery {
-        gameField {
+        gameField @client {
             id
             value
         }
@@ -10,7 +10,7 @@ export const gameFieldQuery = gql`
 `
 export const callCellMutation = gql`
     mutation CallCellMutation($id: ID!) {
-        callCell(id: $id) {
+        callCell(id: $id) @client {
             id
             value
         }

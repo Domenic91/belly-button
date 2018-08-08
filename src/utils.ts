@@ -1,6 +1,6 @@
 import {IGameField, IGameCell} from './types'
 
-const reducer = (id: number, gameField: IGameField): IGameField => {
+export const reducer = (id: number, gameField: IGameField): IGameField => {
 
     const reduceCells:Set<number> = isReducable(id, gameField.width, gameField.height) 
     

@@ -1,11 +1,14 @@
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
+import * as React from "react";
+import * as ReactDOM from "react-dom";
 import styled from "styled-components";
-import {GameField} from "./GameField";
-import './index.css';
-import {initialize} from "./init";
-import registerServiceWorker from './registerServiceWorker';
+import { ApolloProvider, Query, Mutation } from "react-apollo";
 
+import client from "./apollo/setup";
+import { callCellMutation, gameFieldQuery } from "./graphql";
+import { GameField } from "./GameField";
+import "./index.css";
+import { initialize } from "./init";
+import registerServiceWorker from "./registerServiceWorker";
 
 const AppStyle = styled.div`
   width: 100vw;
@@ -23,12 +26,21 @@ const GameFieldWrapStyle = styled.div`
 `;
 
 ReactDOM.render(
-    <AppStyle>
-        <GameFieldWrapStyle>
-            <GameField
-                items={initialize(8,8).cells}/>
-        </GameFieldWrapStyle>
-    </AppStyle>
-    ,document.getElementById('root') as HTMLElement
+  <ApolloProvider client={client}>
+    <Query query={gameFieldQuery}>
+      {data => (
+        <Mutation mutation={callCellMutation}>
+          {mutation => (
+            <AppStyle>
+              <GameFieldWrapStyle>
+                <GameField items={initialize(8, 8).cells} />
+              </GameFieldWrapStyle>
+            </AppStyle>
+          )}
+        </Mutation>
+      )}
+    </Query>
+  </ApolloProvider>,
+  document.getElementById("root") as HTMLElement
 );
 registerServiceWorker();
