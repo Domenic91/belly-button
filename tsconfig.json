@@ -15,7 +15,6 @@
     "noImplicitAny": true,
     "strictNullChecks": true,
     "suppressImplicitAnyIndexErrors": true,
-    "noUnusedLocals": true,
     "lib": [
       "es5",
       "es6",
@@ -30,7 +29,9 @@
       "es2015.symbol",
       "es2015.symbol.wellknown",
       "esnext.asynciterable"
-    ]
+    ],
+    "noUnusedParameters": false,
+    "noUnusedLocals": false,
   },
   "exclude": [
     "node_modules",
