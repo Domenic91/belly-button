@@ -12,7 +12,7 @@ export const reducer = (id: number, gameField: IGameField): IGameField => {
       if (reduceCells.has(cell.id) && typeof cell.value === 'number') {
         return {
           id: cell.id,
-          value: cell.value - 1,
+          value: Math.max(cell.value - 1, 0),
         };
       }
       return cell;
@@ -43,30 +43,21 @@ const isReducable = (
     idx + width + 1,
   ]);
 
-  const isBottom: boolean = width * height - width <= idx;
-  const isLeft: boolean = (idx + 1) % width === 1;
-  const isRight: boolean = (idx + 1) % width === 0;
-  const isTop: boolean = idx < width;
-
-  if (isBottom) {
+  if (idx < width) {
+    reducers.delete(idx - width - 1);
+    reducers.delete(idx - width);
+    reducers.delete(idx - width + 1);
+  } else if (width * height - width <= idx) {
     reducers.delete(idx + width - 1);
     reducers.delete(idx + width);
     reducers.delete(idx + width + 1);
   }
 
-  if (isTop) {
-    reducers.delete(idx - width - 1);
-    reducers.delete(idx - width);
-    reducers.delete(idx - width + 1);
-  }
-
-  if (isLeft) {
+  if ((idx + 1) % width === 1) {
     reducers.delete(idx - width - 1);
     reducers.delete(idx - 1);
     reducers.delete(idx + width - 1);
-  }
-
-  if (isRight) {
+  } else if ((idx + 1) % width === 0) {
     reducers.delete(idx - width + 1);
     reducers.delete(idx + 1);
     reducers.delete(idx + width + 1);
