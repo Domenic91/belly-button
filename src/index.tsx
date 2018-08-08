@@ -10,6 +10,7 @@ import { GameField } from './GameField';
 import './index.css';
 import { initialize } from './init';
 import registerServiceWorker from './registerServiceWorker';
+import { gameWon } from './win';
 
 const AppStyle = styled.div`
   width: 100vw;
@@ -30,29 +31,32 @@ interface IGameFieldQuery {
   gameField: IGameField;
 }
 
-class GameFieldQuery2 extends Query<IGameFieldQuery> {}
+class GameFieldQuery2 extends Query<IGameFieldQuery> { }
 
 ReactDOM.render(
   <ApolloProvider client={client}>
     <GameFieldQuery2 query={gameFieldQuery}>
       {({ data }) => {
-        console.log(data);
         return (
           data && (
             <Mutation mutation={callCellMutation}>
-              {mutation => (
-                <AppStyle>
-                  <GameFieldWrapStyle>
-                    <GameField
-                      items={data.gameField.cells}
-                      onCellPressed={id => {
-                        console.log('test2');
-                        mutation({ variables: { id } });
-                      }}
-                    />
-                  </GameFieldWrapStyle>
-                </AppStyle>
-              )}
+              {mutation => {
+                const path = gameWon(data.gameField);
+                if (path.won) { alert("Schwanznutte!") }
+                return (
+                  <AppStyle>
+                    <GameFieldWrapStyle>
+                      <GameField
+                        path={path.path}
+                        items={data.gameField.cells}
+                        onCellPressed={id => {
+                          mutation({ variables: { id } });
+                        }}
+                      />
+                    </GameFieldWrapStyle>
+                  </AppStyle>
+                );
+              }}
             </Mutation>
           )
         );
