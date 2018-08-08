@@ -1,10 +1,10 @@
-import {GameField, GameCell} from './types'
+import {IGameField, IGameCell} from './types'
 
-const reducer = (id: number, gameField: GameField): GameField => {
+const reducer = (id: number, gameField: IGameField): IGameField => {
 
     const reduceCells:Set<number> = isReducable(id, gameField.width, gameField.height) 
     
-    const cells : GameCell[] = gameField.cells.map(( cell : GameCell ) : GameCell=>{
+    const cells : IGameCell[] = gameField.cells.map((cell : IGameCell ) : IGameCell=>{
         if (reduceCells.has(cell.id) && typeof cell.value === 'number') { 
             return {
                 id : cell.id,

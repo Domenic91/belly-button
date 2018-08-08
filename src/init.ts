@@ -1,9 +1,9 @@
-import {GameField, GameCell} from './types'
+import {IGameField, IGameCell} from './types'
 
-const initialize = (width : number, height : number): GameField => {
+export const initialize = (width : number, height : number): IGameField => {
     const startID : number = Math.floor((Math.random() * width));
     const endID : number = Math.floor((Math.random() * width * height) + (((height - 1) * width) + 1));
-    const cells : GameCell[] = Array.from({ length: width * height }, (_, idx) => {
+    const cells : IGameCell[] = Array.from({ length: width * height }, (_, idx) => {
         if (idx === startID){
             return { 
                 id: idx,
@@ -26,5 +26,5 @@ const initialize = (width : number, height : number): GameField => {
        width,
        height,
     }
-}
+};
 
