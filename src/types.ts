@@ -1,10 +1,10 @@
-export interface IGameCell {
+export interface GameCellInterface {
     id: number,
     value: string | number,
 } 
 
-export interface IGameField{
-    cells: IGameCell[],
+export interface GameFieldInterface {
+    cells: GameCellInterface[],
     width: number,
     height: number,
 }

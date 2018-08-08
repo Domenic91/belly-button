@@ -1,12 +1,11 @@
-import { IGameField, IGameCell } from './types'
+import { GameFieldInterface, GameCellInterface } from './types'
 
-export const initialize = (width: number, height: number): IGameField => {
+export const initialize = (width: number, height: number): GameFieldInterface => {
     const startID: number = Math.floor((Math.random() * width));
     const max = width * height;
     const min = ((height - 1) * width) + 1;
     const endID: number = Math.floor((Math.random() * (max - min)) + min);
-    console.log(endID);
-    const cells: IGameCell[] = Array.from({ length: width * height }, (_, idx) => {
+    const cells: GameCellInterface[] = Array.from({ length: width * height }, (_, idx) => {
         if (idx === startID) {
             return {
                 id: idx,
