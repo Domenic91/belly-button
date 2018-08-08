@@ -1,20 +1,27 @@
-import ApolloClient from "apollo-boost";
-import gql from "graphql-tag";
+import ApolloClient from 'apollo-boost';
+import gql from 'graphql-tag';
 
-import { defaults, resolvers } from "./resolvers";
+import { defaults, resolvers } from './resolvers';
 
-const typeDefs = gql`
+const typeDefs = `
   type GameCell {
     id: ID!
     value: String!
   }
 
-  extend type Mutation {
+  type GameField {
+    id: ID!
+    width: number
+    height: number
+    cells: [GameCell]
+  }
+
+  type Mutation {
     callCell(id: ID!): [GameCell]
   }
 
   extend type Query {
-    gameField: [GameCell]
+    gameField: GameField
   }
 `;
 
@@ -22,6 +29,6 @@ export default new ApolloClient({
   clientState: {
     defaults,
     resolvers,
-    typeDefs
-  }
+    typeDefs,
+  },
 });

@@ -1,29 +1,49 @@
-import { InMemoryCache } from "apollo-boost";
+import { InMemoryCache } from 'apollo-boost';
 
-import { initialize } from "../init";
-import { reducer } from "../utils";
-import { gameFieldQuery } from "../graphql";
-import { GameFieldQuery } from "../graphql.types";
+import { initialize } from '../init';
+import { IGameField } from '../types';
+import { reducer } from '../utils';
+import { gameFieldQuery } from '../graphql';
+import { GameFieldQuery } from '../graphql.types';
+
+const addTypedefToData = (data: IGameField) => ({
+  id: 0,
+  ...data,
+  cells: data.cells.map(cell => ({
+    ...cell,
+    __typename: 'GameCell',
+  })),
+  __typename: 'GameField',
+});
 
 export const defaults = {
-  gameField: initialize(8, 8)
+  gameField: addTypedefToData(initialize(8, 8)),
 };
 
 export const resolvers = {
-  callCell: (
-    _: any,
-    { id }: { id: number },
-    { cache }: { cache: InMemoryCache }
-  ) => {
-    const data = cache.readQuery<GameFieldQuery>({
-      query: gameFieldQuery
-    });
-    const newGameField = reducer(id, data.data);
+  Mutation: {
+    callCell: (
+      _: any,
+      { id }: { id: number },
+      { cache }: { cache: InMemoryCache },
+    ) => {
+      console.log('test');
+      const data = cache.readQuery<GameFieldQuery>({
+        query: gameFieldQuery,
+      });
+      console.log(data);
+      const newGameField = reducer(id, data.gameField);
 
-    data.data = newGameField;
+      data.gameField = addTypedefToData(newGameField);
 
-    cache.writeQuery({ query: gameFieldQuery, data });
+      console.log(data);
 
-    return newGameField;
-  }
+      cache.writeQuery({
+        query: gameFieldQuery,
+        data: data,
+      });
+
+      return data.gameField.cells;
+    },
+  },
 };

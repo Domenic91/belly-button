@@ -1,14 +1,15 @@
-import * as React from "react";
-import * as ReactDOM from "react-dom";
-import styled from "styled-components";
-import { ApolloProvider, Query, Mutation } from "react-apollo";
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
+import styled from 'styled-components';
+import { ApolloProvider, Query, Mutation } from 'react-apollo';
 
-import client from "./apollo/setup";
-import { callCellMutation, gameFieldQuery } from "./graphql";
-import { GameField } from "./GameField";
-import "./index.css";
-import { initialize } from "./init";
-import registerServiceWorker from "./registerServiceWorker";
+import client from './apollo/setup';
+import { callCellMutation, gameFieldQuery } from './graphql';
+import { IGameCell, IGameField } from './types';
+import { GameField } from './GameField';
+import './index.css';
+import { initialize } from './init';
+import registerServiceWorker from './registerServiceWorker';
 
 const AppStyle = styled.div`
   width: 100vw;
@@ -25,22 +26,39 @@ const GameFieldWrapStyle = styled.div`
   max-height: 80vw;
 `;
 
+interface IGameFieldQuery {
+  gameField: IGameField;
+}
+
+class GameFieldQuery2 extends Query<IGameFieldQuery> {}
+
 ReactDOM.render(
   <ApolloProvider client={client}>
-    <Query query={gameFieldQuery}>
-      {data => (
-        <Mutation mutation={callCellMutation}>
-          {mutation => (
-            <AppStyle>
-              <GameFieldWrapStyle>
-                <GameField items={initialize(8, 8).cells} />
-              </GameFieldWrapStyle>
-            </AppStyle>
-          )}
-        </Mutation>
-      )}
-    </Query>
+    <GameFieldQuery2 query={gameFieldQuery}>
+      {({ data }) => {
+        console.log(data);
+        return (
+          data && (
+            <Mutation mutation={callCellMutation}>
+              {mutation => (
+                <AppStyle>
+                  <GameFieldWrapStyle>
+                    <GameField
+                      items={data.gameField.cells}
+                      onCellPressed={id => {
+                        console.log('test2');
+                        mutation({ variables: { id } });
+                      }}
+                    />
+                  </GameFieldWrapStyle>
+                </AppStyle>
+              )}
+            </Mutation>
+          )
+        );
+      }}
+    </GameFieldQuery2>
   </ApolloProvider>,
-  document.getElementById("root") as HTMLElement
+  document.getElementById('root') as HTMLElement,
 );
 registerServiceWorker();

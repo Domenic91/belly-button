@@ -1,7 +1,7 @@
-import { IGameField, IGameCell } from "./types";
+import { IGameField, IGameCell } from './types';
 
 export type GameFieldQuery = {
-  data: IGameField;
+  gameField: IGameField;
 };
 
 export type CallCellMutation = (id: number | string) => IGameCell[];
