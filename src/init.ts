@@ -5,7 +5,6 @@ export const initialize = (width: number, height: number): IGameField => {
     const max = width * height;
     const min = ((height - 1) * width) + 1;
     const endID: number = Math.floor((Math.random() * (max - min)) + min);
-    console.log(endID);
     const cells: IGameCell[] = Array.from({ length: width * height }, (_, idx) => {
         if (idx === startID) {
             return {
