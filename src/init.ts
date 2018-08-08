@@ -1,9 +1,9 @@
-interface GameField {
+export interface IGameCell {
     id: number,
     value: string | number,
 } 
 
-(n: number): GameField[] =>{
+export const createGameField = (n: number): IGameCell[] =>{
     const startID = (Math.random() * n) + 1;
     const endID = (Math.random() * n * n) + (n * (n - 1));
 
@@ -23,5 +23,5 @@ interface GameField {
             id: idx,
             value: (Math.random() * 9) + 1,
         };
-    })
-}
+    });
+};
