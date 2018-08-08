@@ -20,20 +20,60 @@ export const defaults = {
   gameField: addTypedefToData(initialize(8, 8)),
 };
 
-const djWrapper = (gameField: IGameField) => {
-  const clicks = [];
-  let currentGameField = gameField;
-  let won = false;
-  while (!won) {
-    const shortest = djShit(currentGameField);
-    clicks.push(shortest.idx);
-    if (shortest.pathLength === 0) {
-      won = true;
-    }
+const zeroNeighbours = (
+  idx: number,
+  width: number,
+  height: number,
+): Set<number> => {
+  const reducers: Set<number> = new Set([
+    idx - width,
+    idx - 1,
+    idx + 1,
+    idx + width,
+  ]);
+
+  if (idx < width) {
+    reducers.delete(idx - width);
+  } else if (width * height - width <= idx) {
+    reducers.delete(idx + width);
   }
+
+  if ((idx + 1) % width === 1) {
+    reducers.delete(idx - 1);
+  } else if ((idx + 1) % width === 0) {
+    reducers.delete(idx + 1);
+  }
+  return reducers;
 };
 
-const dj = (gameField: IGameField) => {};
+const djRec = (
+  gameField: IGameField,
+  currentIdx: number,
+  endIdx: number,
+  length: number,
+): number => {
+  if (currentIdx === endIdx) {
+    return length;
+  }
+  const neighbors = zeroNeighbours(
+    currentIdx,
+    gameField.width,
+    gameField.height,
+  );
+  const neighborsArray = Array.from(neighbors);
+  const pathLength = neighborsArray.map(neighbor => {
+    const n: number = gameField.cells[neighbor].value as any;
+    return djRec(gameField, neighbor, endIdx, length + n);
+  });
+  return Math.min.apply(pathLength);
+};
+
+const dj = (gameField: IGameField) => {
+  const startId = gameField.cells.findIndex(cell => cell.value === 'start');
+  const endId = gameField.cells.findIndex(cell => cell.value === 'end');
+
+  return djRec(gameField, startId, endId, 0);
+};
 
 const djShit = (gameField: IGameField) => {
   const shortestPaths = gameField.cells.map(cell => {
@@ -54,6 +94,21 @@ const djShit = (gameField: IGameField) => {
     { pathLength: Infinity, idx: -1, gameField: gameField },
   );
 };
+
+const djWrapper = (gameField: IGameField) => {
+  const clicks = [];
+  let currentGameField = gameField;
+  let won = false;
+  while (!won) {
+    const shortest = djShit(currentGameField);
+    clicks.push(shortest.idx);
+    if (shortest.pathLength === 0) {
+      won = true;
+    }
+  }
+};
+
+console.log(djWrapper(defaults.gameField));
 
 export const resolvers = {
   Mutation: {
