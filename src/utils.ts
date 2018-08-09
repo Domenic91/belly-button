@@ -6,7 +6,6 @@ export const reducer = (id: number, gameField: IGameField): IGameField => {
     gameField.width,
     gameField.height,
   );
-  console.log(id, reduceCells);
   const cells: IGameCell[] = gameField.cells.map(
     (cell: IGameCell): IGameCell => {
       if (reduceCells.has(cell.id) && typeof cell.value === 'number') {

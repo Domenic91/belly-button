@@ -51,6 +51,7 @@ const djRec = (
   currentIdx: number,
   endIdx: number,
   length: number,
+  currentFields: Set<number>,
 ): number => {
   if (currentIdx === endIdx) {
     return length;
@@ -60,19 +61,82 @@ const djRec = (
     gameField.width,
     gameField.height,
   );
-  const neighborsArray = Array.from(neighbors);
+  const neighborsArray = Array.from(neighbors).filter(
+    neighbor => !currentFields.has(neighbor),
+  );
   const pathLength = neighborsArray.map(neighbor => {
     const n: number = gameField.cells[neighbor].value as any;
-    return djRec(gameField, neighbor, endIdx, length + n);
+    return djRec(
+      gameField,
+      neighbor,
+      endIdx,
+      length + n,
+      new Set([...(Array.from(currentFields) as any), neighbor]),
+    );
   });
   return Math.min.apply(pathLength);
+};
+
+const findMinUnvisitedNode = (
+  nodes: Array<{ idx: number; value: number; visited: boolean }>,
+) => {
+  let lowestNode = {
+    idx: -1,
+    value: Number.POSITIVE_INFINITY,
+    visited: true,
+  };
+  nodes.forEach(node => {
+    if (node.value < lowestNode.value && !node.visited) {
+      lowestNode = node;
+    }
+  });
+  return lowestNode;
 };
 
 const dj = (gameField: IGameField) => {
   const startId = gameField.cells.findIndex(cell => cell.value === 'start');
   const endId = gameField.cells.findIndex(cell => cell.value === 'end');
 
-  return djRec(gameField, startId, endId, 0);
+  // idx is the id
+  const nodes: Array<{
+    idx: number;
+    value: number;
+    visited: boolean;
+  }> = gameField.cells.map(cell => ({
+    idx: cell.id,
+    value: cell.id === startId ? 0 : Infinity,
+    visited: false,
+  }));
+
+  while (nodes.length > 0) {
+    const minNode = findMinUnvisitedNode(nodes);
+    if (minNode.idx === endId) {
+      return minNode.value;
+    }
+    minNode.visited = true;
+
+    const neighbors = zeroNeighbours(
+      minNode.idx,
+      gameField.width,
+      gameField.height,
+    );
+
+    neighbors.forEach(neighbor => {
+      if (nodes[neighbor].visited) {
+        return;
+      }
+      const value =
+        typeof gameField.cells[neighbor].value === 'number'
+          ? (gameField.cells[neighbor].value as any)
+          : 0;
+      const testLength = minNode.value + value;
+      if (testLength < nodes[neighbor].value) {
+        nodes[neighbor].value = testLength;
+      }
+    });
+  }
+
+  return nodes[endId].value;
 };
 
 const djShit = (gameField: IGameField) => {
@@ -101,11 +165,14 @@ const djWrapper = (gameField: IGameField) => {
   let won = false;
   while (!won) {
     const shortest = djShit(currentGameField);
+    console.log(shortest);
+    currentGameField = shortest.gameField;
     clicks.push(shortest.idx);
     if (shortest.pathLength === 0) {
       won = true;
     }
   }
+  return clicks;
 };
 
 console.log(djWrapper(defaults.gameField));
