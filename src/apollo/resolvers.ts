@@ -78,20 +78,37 @@ const djRec = (
   return Math.min.apply(pathLength);
 };
 
-const findMinUnvisitedNode = (
-  nodes: Array<{ idx: number; value: number; visited: boolean }>,
-) => {
-  let lowestNode = {
+type Node = {
+  idx: number;
+  value: number;
+  visited: boolean;
+  prev: Node | null;
+};
+
+const findMinUnvisitedNode = (nodes: Array<Node>): Node => {
+  let lowestNode: Node = {
     idx: -1,
     value: Number.POSITIVE_INFINITY,
     visited: true,
+    prev: null,
   };
   nodes.forEach(node => {
     if (node.value < lowestNode.value && !node.visited) {
       lowestNode = node;
     }
   });
+
   return lowestNode;
+};
+
+const buildPath = (endNode: Node) => {
+  const path = [];
+  let currentNode: Node | null = endNode;
+  while (currentNode) {
+    path.push(currentNode.idx);
+    currentNode = currentNode.prev;
+  }
+  return path.join('-');
 };
 
 const dj = (gameField: IGameField) => {
@@ -99,20 +116,20 @@ const dj = (gameField: IGameField) => {
   const endId = gameField.cells.findIndex(cell => cell.value === 'end');
 
   // idx is the id
-  const nodes: Array<{
-    idx: number;
-    value: number;
-    visited: boolean;
-  }> = gameField.cells.map(cell => ({
+  const nodes: Array<Node> = gameField.cells.map(cell => ({
     idx: cell.id,
     value: cell.id === startId ? 0 : Infinity,
     visited: false,
+    prev: null,
   }));
 
   while (nodes.length > 0) {
-    const minNode = findMinUnvisitedNode(nodes);
+    const minNode: Node = findMinUnvisitedNode(nodes);
     if (minNode.idx === endId) {
-      return minNode.value;
+      return {
+        pathLength: minNode.value,
+        path: buildPath(minNode),
+      };
     }
     minNode.visited = true;
 
@@ -133,47 +150,86 @@ const dj = (gameField: IGameField) => {
       const testLength = minNode.value + value;
       if (testLength < nodes[neighbor].value) {
         nodes[neighbor].value = testLength;
+        nodes[neighbor].prev = minNode;
       }
     });
   }
 
-  return nodes[endId].value;
+  return {
+    pathLength: nodes[endId].value,
+    path: buildPath(nodes[endId]),
+  };
 };
 
-const djShit = (gameField: IGameField) => {
-  const shortestPaths = gameField.cells.map(cell => {
+interface GameFieldLength {
+  pathLength: number;
+  path: string;
+  gameField: IGameField;
+  idx: number;
+}
+
+const djShit = (gameField: IGameField): Array<GameFieldLength> => {
+  return gameField.cells.map(cell => {
     const newGameField = reducer(cell.id, gameField);
+    const { path, pathLength } = dj(newGameField);
     return {
-      pathLength: dj(newGameField),
+      path,
+      pathLength,
       gameField: newGameField,
       idx: cell.id,
     };
   });
-  return shortestPaths.reduce(
-    (old, obj) => {
-      if (obj.pathLength < old.pathLength) {
-        return obj;
-      }
-      return old;
-    },
-    { pathLength: Infinity, idx: -1, gameField: gameField },
-  );
+  // return shortestPaths.reduce(
+  //   (old, obj) => {
+  //     if (obj.pathLength < old.pathLength) {
+  //       return obj;
+  //     }
+  //     return old;
+  //   },
+  //   { pathLength: Infinity, idx: -1, gameField: gameField },
+  // );
+};
+
+const filterShortestArray = (fieldsWithPath: Array<GameFieldLength>) => {
+  const arr = {};
+  let minPath = Infinity;
+
+  fieldsWithPath.forEach(fieldWithPath => {
+    const { pathLength: len, path } = fieldWithPath;
+    if (!arr[len]) {
+      arr[len] = {};
+      minPath = Math.min(minPath, len);
+    }
+
+    if (!arr[len][path]) {
+      arr[len][path] = fieldWithPath;
+    }
+  });
+
+  return Object.keys(arr[minPath]).map(key => arr[minPath][key]);
 };
 
 const djWrapper = (gameField: IGameField) => {
-  const clicks = [];
-  let currentGameField = gameField;
+  let count = 0;
+  let currentGameFields = [gameField];
   let won = false;
   while (!won) {
-    const shortest = djShit(currentGameField);
-    console.log(shortest);
-    currentGameField = shortest.gameField;
-    clicks.push(shortest.idx);
-    if (shortest.pathLength === 0) {
+    let fieldsWithPath: Array<GameFieldLength> = [];
+    currentGameFields.forEach(gameField => {
+      const gameFields = djShit(gameField);
+      fieldsWithPath = fieldsWithPath.concat(gameFields);
+    });
+    const shortestFields = filterShortestArray(fieldsWithPath);
+    currentGameFields = currentGameFields.concat(
+      shortestFields.map(({ gameField }) => gameField),
+    );
+    count += 1;
+    if (shortestFields[0].pathLength === 0) {
       won = true;
+      return shortestFields[0].path.split('-');
     }
   }
-  return clicks;
+  return count;
 };
 
 console.log(djWrapper(defaults.gameField));
