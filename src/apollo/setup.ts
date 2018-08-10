@@ -22,6 +22,7 @@ const typeDefs = `
 
   extend type Query {
     gameField: GameField
+    cliks: number
   }
 `;
 

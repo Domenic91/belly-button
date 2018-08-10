@@ -5,10 +5,9 @@ import { ApolloProvider, Query, Mutation } from 'react-apollo';
 
 import client from './apollo/setup';
 import { callCellMutation, gameFieldQuery } from './graphql';
-import { IGameCell, IGameField } from './types';
+import { IGameField } from './types';
 import { GameField } from './GameField';
 import './index.css';
-import { initialize } from './init';
 import registerServiceWorker from './registerServiceWorker';
 import { gameWon } from './win';
 
@@ -29,9 +28,10 @@ const GameFieldWrapStyle = styled.div`
 
 interface IGameFieldQuery {
   gameField: IGameField;
+  clicks: number;
 }
 
-class GameFieldQuery2 extends Query<IGameFieldQuery> { }
+class GameFieldQuery2 extends Query<IGameFieldQuery> {}
 
 ReactDOM.render(
   <ApolloProvider client={client}>
@@ -42,7 +42,9 @@ ReactDOM.render(
             <Mutation mutation={callCellMutation}>
               {mutation => {
                 const path = gameWon(data.gameField);
-                if (path.won) { alert("Schwanznutte!") }
+                if (path.won) {
+                  alert(`You did it - only ${data.clicks} clicks`);
+                }
                 return (
                   <AppStyle>
                     <GameFieldWrapStyle>

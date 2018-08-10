@@ -10,6 +10,7 @@ export const gameFieldQuery = gql`
         value
       }
     }
+    clicks @client
   }
 `;
 export const callCellMutation = gql`

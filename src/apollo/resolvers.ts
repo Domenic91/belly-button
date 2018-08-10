@@ -18,6 +18,7 @@ const addTypedefToData = (data: IGameField) => ({
 
 export const defaults = {
   gameField: addTypedefToData(initialize(8, 8)),
+  clicks: 0,
 };
 
 const zeroNeighbours = (
@@ -192,6 +193,7 @@ export const resolvers = {
       const newGameField = reducer(id, data.gameField);
 
       data.gameField = addTypedefToData(newGameField);
+      data.clicks = data.clicks + 1;
 
       console.log(data);
 
