@@ -226,7 +226,7 @@ const djWrapper = (gameField: IGameField) => {
     count += 1;
     if (shortestFields[0].pathLength === 0) {
       won = true;
-      return shortestFields[0].path.split('-');
+      return count;
     }
   }
   return count;
