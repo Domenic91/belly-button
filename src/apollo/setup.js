@@ -1,5 +1,4 @@
 import ApolloClient from 'apollo-boost';
-import gql from 'graphql-tag';
 
 import { defaults, resolvers } from './resolvers';
 
@@ -22,6 +21,7 @@ const typeDefs = `
 
   extend type Query {
     gameField: GameField
+    cliks: number
   }
 `;
 

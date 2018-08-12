@@ -1,23 +1,14 @@
-import { IGameField, IGameCell } from './types';
-
-export const reducer = (id: number, gameField: IGameField): IGameField => {
-  const reduceCells: Set<number> = isReducable(
-    id,
-    gameField.width,
-    gameField.height,
-  );
-  console.log(id, reduceCells);
-  const cells: IGameCell[] = gameField.cells.map(
-    (cell: IGameCell): IGameCell => {
-      if (reduceCells.has(cell.id) && typeof cell.value === 'number') {
-        return {
-          id: cell.id,
-          value: Math.max(cell.value - 1, 0),
-        };
-      }
-      return cell;
-    },
-  );
+export const reducer = (id, gameField) => {
+  const reduceCells = isReducable(id, gameField.width, gameField.height);
+  const cells = gameField.cells.map(cell => {
+    if (reduceCells.has(cell.id) && typeof cell.value === 'number') {
+      return {
+        id: cell.id,
+        value: Math.max(cell.value - 1, 0),
+      };
+    }
+    return cell;
+  });
 
   return {
     cells,
@@ -26,12 +17,8 @@ export const reducer = (id: number, gameField: IGameField): IGameField => {
   };
 };
 
-const isReducable = (
-  idx: number,
-  width: number,
-  height: number,
-): Set<number> => {
-  const reducers: Set<number> = new Set([
+const isReducable = (idx, width, height) => {
+  const reducers = new Set([
     idx - width - 1,
     idx - width,
     idx - width + 1,
