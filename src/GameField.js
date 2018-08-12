@@ -21,7 +21,7 @@ const CellStyle = styled.div`
   box-sizing: border-box;
 `;
 
-export const GameField = ({ items, onCellPressed, path }) => {
+export default ({ items, onCellPressed, path, botNext }) => {
   const calcWidth = () => {
     return 100 / Math.sqrt(items.length);
   };
@@ -29,7 +29,12 @@ export const GameField = ({ items, onCellPressed, path }) => {
     <GameFieldStyle>
       {items.map(c => (
         <CellStyle key={c.id} width={calcWidth()}>
-          <GameCell fn={onCellPressed} props={c} isBlue={path.has(c.id)} />
+          <GameCell
+            fn={onCellPressed}
+            props={c}
+            isBlue={path.has(c.id)}
+            highlight={botNext === c.id}
+          />
         </CellStyle>
       ))}
     </GameFieldStyle>

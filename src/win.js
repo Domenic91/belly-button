@@ -1,13 +1,3 @@
-export const gameWon = gameField => {
-  const startId = gameField.cells.findIndex(cell => cell.value === 'start');
-  const endId = gameField.cells.findIndex(cell => cell.value === 'end');
-  const resultSet = recBlue(startId, gameField, new Set([startId]));
-  return {
-    path: resultSet,
-    won: resultSet.has(endId),
-  };
-};
-
 const zeroNeighbours = (idx, width, height) => {
   const reducers = new Set([idx - width, idx - 1, idx + 1, idx + width]);
 
@@ -36,4 +26,14 @@ const recBlue = (idx, gf, resultSet) => {
     }
   });
   return resultSet;
+};
+
+export default gameField => {
+  const startId = gameField.cells.findIndex(cell => cell.value === 'start');
+  const endId = gameField.cells.findIndex(cell => cell.value === 'end');
+  const resultSet = recBlue(startId, gameField, new Set([startId]));
+  return {
+    path: resultSet,
+    won: resultSet.has(endId),
+  };
 };

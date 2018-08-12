@@ -1,21 +1,4 @@
-import { initialize } from '../init';
-import { reducer } from '../utils';
-import { gameFieldQuery } from '../graphql';
-
-const addTypedefToData = data => ({
-  id: 0,
-  ...data,
-  cells: data.cells.map(cell => ({
-    ...cell,
-    __typename: 'GameCell',
-  })),
-  __typename: 'GameField',
-});
-
-export const defaults = {
-  gameField: addTypedefToData(initialize(8, 8)),
-  clicks: 0,
-};
+import { reducer } from './utils';
 
 const zeroNeighbours = (idx, width, height) => {
   const reducers = new Set([idx - width, idx - 1, idx + 1, idx + width]);
@@ -32,31 +15,6 @@ const zeroNeighbours = (idx, width, height) => {
     reducers.delete(idx + 1);
   }
   return reducers;
-};
-
-const djRec = (gameField, currentIdx, endIdx, length, currentFields) => {
-  if (currentIdx === endIdx) {
-    return length;
-  }
-  const neighbors = zeroNeighbours(
-    currentIdx,
-    gameField.width,
-    gameField.height,
-  );
-  const neighborsArray = Array.from(neighbors).filter(
-    neighbor => !currentFields.has(neighbor),
-  );
-  const pathLength = neighborsArray.map(neighbor => {
-    const n = gameField.cells[neighbor].value;
-    return djRec(
-      gameField,
-      neighbor,
-      endIdx,
-      length + n,
-      new Set([...Array.from(currentFields), neighbor]),
-    );
-  });
-  return Math.min.apply(pathLength);
 };
 
 const findMinUnvisitedNode = nodes => {
@@ -135,7 +93,8 @@ const dj = gameField => {
   };
 };
 
-const djShit = gameField => {
+const djShit = gameFieldData => {
+  const gameField = gameFieldData.gameField;
   return gameField.cells.map(cell => {
     const newGameField = reducer(cell.id, gameField);
     const { path, pathLength } = dj(newGameField);
@@ -143,18 +102,9 @@ const djShit = gameField => {
       path,
       pathLength,
       gameField: newGameField,
-      idx: cell.id,
+      clicks: [...gameFieldData.clicks, cell.id],
     };
   });
-  // return shortestPaths.reduce(
-  //   (old, obj) => {
-  //     if (obj.pathLength < old.pathLength) {
-  //       return obj;
-  //     }
-  //     return old;
-  //   },
-  //   { pathLength: Infinity, idx: -1, gameField: gameField },
-  // );
 };
 
 const filterShortestArray = fieldsWithPath => {
@@ -176,52 +126,28 @@ const filterShortestArray = fieldsWithPath => {
   return Object.keys(arr[minPath]).map(key => arr[minPath][key]);
 };
 
-const djWrapper = gameField => {
+export default gameField => {
   let count = 0;
-  let currentGameFields = [gameField];
-  let won = false;
-  while (!won) {
+  let currentGameFields = [
+    {
+      path: '',
+      pathLength: Infinity,
+      gameField,
+      clicks: [],
+    },
+  ];
+  while (count < 100) {
     let fieldsWithPath = [];
-    currentGameFields.forEach(gameField => {
-      const gameFields = djShit(gameField);
+    currentGameFields.forEach(currentGameField => {
+      console.log(currentGameField);
+      const gameFields = djShit(currentGameField);
       fieldsWithPath = fieldsWithPath.concat(gameFields);
     });
-    const shortestFields = filterShortestArray(fieldsWithPath);
-    currentGameFields = currentGameFields.concat(
-      shortestFields.map(({ gameField }) => gameField),
-    );
+    currentGameFields = filterShortestArray(fieldsWithPath);
     count += 1;
-    if (shortestFields[0].pathLength === 0) {
-      won = true;
-      return count;
+    if (currentGameFields[0].pathLength === 0) {
+      return { path: currentGameFields[0].clicks, count };
     }
   }
-  return count;
-};
-
-console.log(djWrapper(defaults.gameField));
-
-export const resolvers = {
-  Mutation: {
-    callCell: (_, { id }, { cache }) => {
-      console.log('test');
-      const data = cache.readQuery({
-        query: gameFieldQuery,
-      });
-      console.log(data);
-      const newGameField = reducer(id, data.gameField);
-
-      data.gameField = addTypedefToData(newGameField);
-      data.clicks = data.clicks + 1;
-
-      console.log(data);
-
-      cache.writeQuery({
-        query: gameFieldQuery,
-        data: data,
-      });
-
-      return data.gameField.cells;
-    },
-  },
+  return { path: [], count };
 };
