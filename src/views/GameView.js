@@ -64,12 +64,12 @@ export default ({ seed, navigate }) => {
                 path={path}
                 items={gameField.cells}
                 onCellPressed={clickField}
-                botNext={bot.path.length > clicks && bot.path[clicks]}
+                botNext={bot.paths[0].length > clicks && bot.paths[0][clicks]}
               />
             </GameFieldWrapStyle>
-            <BotStyle>{bot.count}</BotStyle>
+            <BotStyle>{bot.pathLength}</BotStyle>
             <BotPathStyle>
-              {bot.path.map(item => (
+              {bot.paths[0].map(item => (
                 <BotPathTextStyle>{item}</BotPathTextStyle>
               ))}
             </BotPathStyle>
